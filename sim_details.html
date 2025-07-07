@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIM Database Lookup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #7b8088;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #b47b7b;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 500px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            width: 80%;
+            border: 1px solid #0f0f0f;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .result div {
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+        .loading {
+            margin-top: 10px;
+            color: #555;
+        }
+        .info {
+            padding: 1px;
+            background-color: #99a9b8;
+            border: 1px solid #63a9be;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 500px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+
+  <!-- Main Content -->
+  <main>
+    
+    <div class="info">
+      <h1>GenZ Sim DataBase</h1>
+      <h4>Created By: Zargham Ullah Shah</h4>
+        
+      </div>
+    </section>
+
+
+    <div class="container">
+        <h1>SIM Database Lookup</h1>
+        <div class="input-group">
+            <input type="text" id="mobileInput" placeholder="Enter mobile number (e.g., 03xxxx)">
+            <button onclick="fetchData()">Search</button>
+        </div>
+        <div id="loading" class="loading" style="display: none;">Loading...</div>
+        <div id="error" class="error" style="display: none;"></div>
+        <div id="result" class="result"></div>
+    </div> &nbsp;
+    <p>It shows the information of previous registered numbers,</p>
+    <p>not responsive for newely registered numbers</p>
+<div class="about">
+            <h1>About Us</h1>
+             <a href="https://whatsapp.com/channel/0029Vb89vSMJpe8g92aWgt25" target="_blank">Click here to get WhatsApp</a>
+        </div>
+
+
+    <script>
+        async function fetchData() {
+            const mobileInput = document.getElementById('mobileInput').value;
+            const resultDiv = document.getElementById('result');
+            const errorDiv = document.getElementById('error');
+            const loadingDiv = document.getElementById('loading');
+
+            // Clear previous results and errors
+            resultDiv.innerHTML = '';
+            errorDiv.style.display = 'none';
+            loadingDiv.style.display = 'block';
+
+            // Validate input
+            if (!mobileInput.match(/^\d{10,11}$/)) {
+                loadingDiv.style.display = 'none';
+                errorDiv.textContent = 'Please enter a valid mobile number (10-11 digits).';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            // Use allorigins proxy
+            const proxyUrl = 'https://api.allorigins.win/get?url=';
+            const apiUrl = `https://famofcfallxd.serv00.net/apis/newsimdata.php?num=${encodeURIComponent(mobileInput)}`;
+            const url = proxyUrl + encodeURIComponent(apiUrl);
+
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Origin': window.location.origin
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status} - ${response.statusText}`);
+                }
+
+                const proxyData = await response.json();
+                const data = JSON.parse(proxyData.contents); // Parse the contents field
+
+                loadingDiv.style.display = 'none';
+
+                if (data.status === 'success' && data.data && data.data.length > 0) {
+                    const record = data.data[0];
+                    resultDiv.innerHTML = `
+                        <div>
+                            <strong>Mobile:</strong> ${record.mobile}<br>
+                            <strong>Name:</strong> ${record.name}<br>\
+                            <strong>CNIC:</strong> ${record.cnic}<br>
+                            <strong>Address:</strong> ${record.address}
+                        </div>
+                    `;
+                } else {
+                    errorDiv.textContent = data.message || 'No data found for this number.';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                loadingDiv.style.display = 'none';
+                errorDiv.textContent = `Error fetching data: ${error.message}. Please check the API or proxy.`;
+                errorDiv.style.display = 'block';
+                console.error('Fetch error:', error);
+            }
+        }
+        
+    </script>
+</body>
+</html>
